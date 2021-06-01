@@ -1,0 +1,60 @@
+import point_gnc
+import gnc_geometric_network
+import maximal_clique_algorithm
+import posa_improvement_for_geometric_model
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+# -----------------------------------------------------------------------------------------------------
+# Function that generates random geometric model
+
+def generate_model(n, c):
+    net = gnc_geometric_network.Network(c)
+    for i in range(0, n):
+        p = point_gnc.Point(i)
+        net.add_vertex(p)
+    net.make_edges()
+    net.print_network()
+    net.draw_network("main_network")
+    return net
+
+
+# -----------------------------------------------------------------------------------------------------
+# Drawing distribution histogram
+
+def draw_distribution_histogram(categories, counts, title):
+    plt.bar(categories, counts, color='orange')
+    plt.title('{} distribution'.format(title))
+    plt.xlabel('degree')
+    plt.ylabel('number of nodes')
+    plt.savefig('{}_bar.png'.format(title), dpi=300)
+    plt.show()
+
+
+# -----------------------------------------------------------------------------------------------------
+
+def main():
+    n = 50
+    c = 0.4
+    net = generate_model(n, c)
+    mat = net.adjacency_matrix()
+    sum_arr = []
+    for i in range(len(mat)):
+        sum = 0
+        for j in range(len(mat)):
+            sum += mat[i][j]
+        sum_arr.append(sum)
+    degree_count = [0] * len(sum_arr)
+    for i in range(len(sum_arr)):
+        degree_count[sum_arr[i]] += 1
+    print("degree_count :")
+    print(degree_count)
+    draw_distribution_histogram(list(np.arange(n)), degree_count, 'degree')
+    # rail_v_geo, rail_e_geo = posa_improvement_for_geometric_model.posa(net)
+    # max_clique_group = maximal_clique_algorithm.deterministic_maximal_clique_algorithm(net)
+    # maximal_clique_algorithm.check_if_clique(net, max_clique_group)
+
+
+if __name__ == '__main__':
+    main()
